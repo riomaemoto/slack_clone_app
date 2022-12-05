@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 // PKD
 import { getAuth } from "firebase/auth";
 import { getFirestore, QueryDocumentSnapshot } from "firebase/firestore";
+import { RoomTyp, UserTyp } from "./types";
 // PKD
 
 const firebaseConfig = {
@@ -21,3 +22,17 @@ export const database = getFirestore(FB);
 // PKD end
 export const USER_DB = "users";
 export const ROOM_DB = "rooms";
+
+export const userConverter = {
+  fromFirestore: (ss: QueryDocumentSnapshot<UserTyp>) => {
+    return ss.data();
+  },
+  toFirestore: (model: UserTyp) => model,
+};
+
+export const roomConverter = {
+  fromFirestore: (ss: QueryDocumentSnapshot<RoomTyp>) => {
+    return ss.data();
+  },
+  toFirestore: (model: RoomTyp) => model,
+};
