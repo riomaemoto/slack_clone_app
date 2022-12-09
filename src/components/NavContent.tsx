@@ -14,6 +14,8 @@ import { UserTyp } from "../utils/types";
 import { GiMechanicalArm } from "react-icons/gi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
+import { useRecoilValue } from "recoil";
+import { historyState } from "../utils/provider";
 
 type Props = {
   userInfo: UserTyp | null;
@@ -21,6 +23,13 @@ type Props = {
 };
 
 export const NavContent: FC<Props> = ({ userInfo, onOpen }) => {
+  // PDK
+  const historyPath = useRecoilValue(historyState);
+  const isMatch = (arg: string): boolean => {
+    return arg === historyPath;
+  };
+  // PDK end
+
   const deleteChannel = () => {};
 
   return (

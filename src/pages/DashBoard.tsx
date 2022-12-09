@@ -58,7 +58,6 @@ export const DashBoard = () => {
           <FooterContent />
         </GridItem>
       </Grid>
-
       <ChannelModal isOpen={isOpen} onClose={onClose} />
     </>
   );

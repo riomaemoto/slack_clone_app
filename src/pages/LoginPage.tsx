@@ -13,7 +13,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { Link, Navigate } from "react-router-dom";
-import { loginState } from "../utils/provider";
+import { historyState, loginState } from "../utils/provider";
 import { useRecoilValue } from "recoil";
 // PKD end
 
@@ -23,6 +23,7 @@ export const LoginPage = () => {
   const [isLoading, setIsloading] = useState(false);
   // PKD
   const loginInfo = useRecoilValue(loginState);
+  const historyValue = useRecoilValue(historyState);
   // PKD end
   const toast = useToast();
 
@@ -51,7 +52,7 @@ export const LoginPage = () => {
   };
 
   return loginInfo ? (
-    <Navigate to={"/dashboard"} />
+    <Navigate to={`/dashboard/${historyValue || "home"}`} />
   ) : (
     <Center h="100vh" bg="purple.50">
       <Box bg={"white"} w={"sm"} p={4} borderRadius={"md"} shadow={"md"}>
