@@ -10,6 +10,11 @@ export const userInfoState = atom<UserType | null>({
   default: null,
 });
 
+export const searchInfoState = atom<ChannelType[]>({
+  key: "searchInfoState",
+  default: [],
+});
+
 export const channelInfoState = atomFamily<ChannelType | null, string>({
   key: "channelInfoState",
   default: null,
