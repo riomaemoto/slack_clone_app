@@ -42,7 +42,9 @@ export const ChannelModal: FC<Props> = ({ isOpen, onClose }) => {
               <Tab>Create</Tab>
             </TabList>
             <TabPanels>
-              <TabPanel>aa</TabPanel>
+              <TabPanel>
+                <SearchPannel />
+              </TabPanel>
               <TabPanel>
                 <CreatePanel onClose={onClose} />
               </TabPanel>
@@ -107,5 +109,25 @@ const CreatePanel: FC<{ onClose: () => void }> = ({ onClose }) => {
         </Button>
       </Box>
     </Flex>
+  );
+};
+
+const SearchPannel = () => {
+  const [searchTxt, setSearchTxt] = useState("");
+  return (
+    <>
+      <Flex gap={4} flexDirection={"column"}>
+        <Input
+          placeholder="Search Name"
+          value={searchTxt}
+          onChange={(e) => setSearchTxt(e.target.value)}
+        />
+        <Box textAlign="right">
+          <Button bg="cyan.200" mr={3} disabled={searchTxt === ""} w="30%">
+            Search
+          </Button>
+        </Box>
+      </Flex>
+    </>
   );
 };
