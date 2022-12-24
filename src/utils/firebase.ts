@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, QueryDocumentSnapshot } from "firebase/firestore";
-import { UserType } from "./constants";
+import { ChannelType, UserType } from "./constants";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0JYiaQb1Uu2TfwtOh0ts4UDSaRtZVoqQ",
@@ -26,9 +26,9 @@ export const userConverter = {
   toFirestore: (model: UserType) => model,
 };
 
-// export const channelConverter = {
-//   fromFirestore: (ss: QueryDocumentSnapshot<RoomTyp>) => {
-//     return ss.data();
-//   },
-//   toFirestore: (model: RoomTyp) => model,
-// };
+export const channelConverter = {
+  fromFirestore: (ss: QueryDocumentSnapshot<ChannelType>) => {
+    return ss.data();
+  },
+  toFirestore: (model: ChannelType) => model,
+};

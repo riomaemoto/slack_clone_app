@@ -34,7 +34,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/:channel_id" element={<Dashboard />} />
         </Routes>
       )}
     </BrowserRouter>

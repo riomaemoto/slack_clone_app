@@ -38,8 +38,12 @@ export const NavContent = ({ onOpen }: { onOpen: () => void }) => {
       </Flex>
       <Box mt={3} ml={3}>
         {userInfo?.myRooms.map((item) => (
-          <Flex justifyContent="space-between" alignItems="center">
-            <Link to={`/dashboard`}>
+          <Flex
+            justifyContent="space-between"
+            alignItems="center"
+            key={item.id}
+          >
+            <Link to={`/dashboard/${item.id}`}>
               <Text my={2} fontSize="md">
                 {`# ${item.name}`}
               </Text>

@@ -47,7 +47,7 @@ export const LoginPage = () => {
   };
 
   return loginInfo ? (
-    <Navigate to={"/dashboard"} />
+    <Navigate to={"/dashboard/home"} />
   ) : (
     <Center h="100vh" bg="purple.50">
       <Box bg="white" w="sm" p={4} borderRadius="md" shadow="md">

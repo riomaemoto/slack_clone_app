@@ -9,6 +9,8 @@ import { NavContent } from "./NavContents";
 import { ChannelModal } from "./ChannelModal";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect } from "react";
+import { SendContent } from "./SendContent";
+import { ChatArea } from "./ChatArea";
 export const Dashboard = () => {
   const loginInfo = useRecoilValue(loginInfoState);
   const setUserInfo = useSetRecoilState(userInfoState);
@@ -56,9 +58,13 @@ export const Dashboard = () => {
           <NavContent onOpen={onOpen} />
         </GridItem>
 
-        <GridItem pl="2" bg="white" area={"main"}></GridItem>
+        <GridItem pl="2" bg="white" area={"main"}>
+          <ChatArea />
+        </GridItem>
 
-        <GridItem p="3" bg="gray.200" area={"footer"}></GridItem>
+        <GridItem p="3" bg="gray.200" area={"footer"}>
+          <SendContent />
+        </GridItem>
       </Grid>
       <ChannelModal isOpen={isOpen} ss={onClose} />
     </>
