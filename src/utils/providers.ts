@@ -1,5 +1,5 @@
-import { atom, atomFamily } from "recoil";
-import { ChannelType, UserType } from "./constants";
+import { atom } from "recoil";
+import { UserType } from "./constants";
 
 export const loginInfoState = atom<string | null>({
   key: "loginInfoState",
@@ -7,15 +7,5 @@ export const loginInfoState = atom<string | null>({
 });
 export const userInfoState = atom<UserType | null>({
   key: "userInfoState",
-  default: null,
-});
-
-export const searchInfoState = atom<ChannelType[]>({
-  key: "searchInfoState",
-  default: [],
-});
-
-export const channelInfoState = atomFamily<ChannelType | null, string>({
-  key: "channelInfoState",
   default: null,
 });

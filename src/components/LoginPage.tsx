@@ -4,80 +4,79 @@ import {
   Center,
   Heading,
   Input,
-  Stack,
   Text,
+  Stack,
   useToast,
 } from "@chakra-ui/react";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { FA } from "../utils/firebase";
+import { useRecoilValue } from "recoil";
 import { loginInfoState } from "../utils/providers";
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const loginInfo = useRecoilValue(loginInfoState);
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const loginInfo = useRecoilValue(loginInfoState);
-
   const login = () => {
-    setLoading(true);
+    setIsLoading(true);
     signInWithEmailAndPassword(FA, email, password)
-      .then(() => {
+      .then((_) => {
         toast({
-          title: "success",
-          duration: 1000,
           status: "success",
+          duration: 1000,
+          title: "success",
           isClosable: true,
         });
       })
       .catch((error) => {
         toast({
-          title: error.message,
-          duration: 1000,
           status: "error",
+          duration: 1000,
+          title: error.message,
           isClosable: true,
         });
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   };
 
   return loginInfo ? (
-    <Navigate to={`/dashboard/home`} />
+    <Navigate to={"/dashboard"} />
   ) : (
     <Center h="100vh" bg="purple.50">
-      <Box bg={"white"} w={"sm"} p={4} borderRadius={"md"} shadow={"md"}>
+      <Box bg="white" w="sm" p={4} borderRadius="md" shadow="md">
         <Stack spacing={6} py={4} px={10}>
-          <Heading as={"h1"} size={"lg"} textAlign={"center"}>
+          <Heading as="h1" size="lg" textAlign="center">
             Login
           </Heading>
           <Input
-            type={"email"}
-            placeholder={"email"}
+            type="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
-            type={"password"}
-            placeholder={"password"}
+            type="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button
             disabled={email === "" || password === ""}
-            isLoading={loading}
+            isLoading={isLoading}
             onClick={login}
           >
-            Login
+            ログイン
           </Button>
-          <Link to="/signup">
-            <Text size={"xs"} color={"cyan.600"}>
-              Create account?
+          <Link to={"/signup"}>
+            <Text size={"xs"} color="cyan.600">
+              アカウントをお持ちでない方
             </Text>
           </Link>
         </Stack>

@@ -1,40 +1,34 @@
-import { Navigate } from "react-router-dom";
 import { Flex, Grid, GridItem, useDisclosure } from "@chakra-ui/react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { Navigate } from "react-router-dom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { loginInfoState, userInfoState } from "../utils/providers";
-import { useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { USER_DB } from "../utils/constants";
-import { FA, FS, userConverter } from "../utils/firebase";
 import { GoSignOut } from "react-icons/go";
+import { FA, FS, userConverter, USER_DB } from "../utils/firebase";
 import { signOut } from "firebase/auth";
 import { NavContent } from "./NavContents";
 import { ChannelModal } from "./ChannelModal";
-import { ChatArea } from "./ChatArea";
-import { SendContent } from "./SendContent";
-
+import { doc, getDoc } from "firebase/firestore";
+import { useEffect } from "react";
 export const Dashboard = () => {
   const loginInfo = useRecoilValue(loginInfoState);
-  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const { onOpen, isOpen, onClose } = useDisclosure();
-
-  const logout = () => {
-    signOut(FA);
-  };
+  const setUserInfo = useSetRecoilState(userInfoState);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (loginInfo) {
       getDoc(doc(FS, USER_DB, loginInfo).withConverter(userConverter)).then(
         (res) => {
-          if (res.exists()) {
-            setUserInfo(res.data());
-          }
+          if (res.exists()) setUserInfo(res.data());
         }
       );
     }
   }, []);
+
+  const logout = () => {
+    signOut(FA);
+  };
   return !loginInfo ? (
-    <Navigate to="/" />
+    <Navigate to={"/"} />
   ) : (
     <>
       <Grid
@@ -49,7 +43,12 @@ export const Dashboard = () => {
       >
         <GridItem bg="pink.900" area={"header"}>
           <Flex alignItems="center" h="100%" pl={3}>
-            <GoSignOut size={20} onClick={logout} color="white" />
+            <GoSignOut
+              cursor={"pointer"}
+              size={20}
+              onClick={logout}
+              color="white"
+            />
           </Flex>
         </GridItem>
 
@@ -57,15 +56,11 @@ export const Dashboard = () => {
           <NavContent onOpen={onOpen} />
         </GridItem>
 
-        <GridItem pl="2" bg="white" area={"main"}>
-          <ChatArea />
-        </GridItem>
+        <GridItem pl="2" bg="white" area={"main"}></GridItem>
 
-        <GridItem p="3" bg="gray.200" area={"footer"}>
-          <SendContent />
-        </GridItem>
+        <GridItem p="3" bg="gray.200" area={"footer"}></GridItem>
       </Grid>
-      <ChannelModal isOpen={isOpen} onClose={onClose} />
+      <ChannelModal isOpen={isOpen} ss={onClose} />
     </>
   );
 };

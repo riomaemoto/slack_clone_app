@@ -1,42 +1,42 @@
-import { Center, Spinner } from "@chakra-ui/react";
-import { onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { Dashboard } from "./components/Dashboard";
 import { LoginPage } from "./components/LoginPage";
 import { Signup } from "./components/Signup";
+import { Dashboard } from "./components/Dashboard";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { FA } from "./utils/firebase";
+import { useSetRecoilState } from "recoil";
 import { loginInfoState } from "./utils/providers";
+import { Center, Spinner } from "@chakra-ui/react";
 
 const App = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const setLoginInfo = useSetRecoilState(loginInfoState);
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    setLoading(true);
-    const unsub = onAuthStateChanged(FA, (current) => {
-      setLoading(false);
-      if (current) {
-        setLoginInfo(current.uid);
+    setIsLoading(true);
+    const unsub = onAuthStateChanged(FA, (res) => {
+      setIsLoading(false);
+      if (res) {
+        setLoginInfo(res.uid);
       } else {
         setLoginInfo(null);
       }
     });
     return () => unsub();
   }, []);
-
-  return loading ? (
-    <Center h={"100vh"}>
-      <Spinner />
-    </Center>
-  ) : (
+  return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard/:cbd" element={<Dashboard />} />
-      </Routes>
+      {isLoading ? (
+        <Center h={"100vh"}>
+          <Spinner />
+        </Center>
+      ) : (
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      )}
     </BrowserRouter>
   );
 };

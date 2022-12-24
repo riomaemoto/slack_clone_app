@@ -1,25 +1,23 @@
 import {
-  Text,
-  Box,
   Flex,
-  Menu,
-  MenuItem,
-  MenuList,
-  MenuButton,
   Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Box,
+  Text,
 } from "@chakra-ui/react";
-import { FC } from "react";
 import { Link } from "react-router-dom";
+
 import { GiMechanicalArm } from "react-icons/gi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 import { useRecoilValue } from "recoil";
-import { UserType } from "../utils/constants";
 import { userInfoState } from "../utils/providers";
 
-export const NavContent: FC<{ onOpen: () => void }> = ({ onOpen }) => {
+export const NavContent = ({ onOpen }: { onOpen: () => void }) => {
   const userInfo = useRecoilValue(userInfoState);
-
   return (
     <>
       <Flex alignItems="center" gap={2}>
@@ -32,22 +30,18 @@ export const NavContent: FC<{ onOpen: () => void }> = ({ onOpen }) => {
         <Flex>
           <GiMechanicalArm size={20} />
           <Text ml={2} fontSize="md">
-            channel
+            チャンネル
           </Text>
         </Flex>
 
-        <AiOutlinePlusCircle onClick={onOpen} size={20} />
+        <AiOutlinePlusCircle size={20} onClick={onOpen} />
       </Flex>
       <Box mt={3} ml={3}>
-        {userInfo?.myChannels.map((item) => (
-          <Flex
-            justifyContent="space-between"
-            alignItems="center"
-            key={item.channelId}
-          >
-            <Link to={`/dashboard/${item.channelId}`}>
+        {userInfo?.myRooms.map((item) => (
+          <Flex justifyContent="space-between" alignItems="center">
+            <Link to={`/dashboard`}>
               <Text my={2} fontSize="md">
-                {item.channelName}
+                {`# ${item.name}`}
               </Text>
             </Link>
             <Menu>
@@ -55,7 +49,9 @@ export const NavContent: FC<{ onOpen: () => void }> = ({ onOpen }) => {
                 <BsThreeDots />
               </MenuButton>
               <MenuList>
-                <MenuItem color="blackAlpha.700">Delete</MenuItem>
+                <MenuItem color="blackAlpha.700" onClick={() => {}}>
+                  Delete
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>

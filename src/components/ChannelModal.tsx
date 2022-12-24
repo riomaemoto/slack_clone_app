@@ -1,37 +1,36 @@
 import {
-  Box,
-  Button,
-  Flex,
-  Input,
   Modal,
-  ModalBody,
-  ModalCloseButton,
+  ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalOverlay,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Text,
+  ModalCloseButton,
+  ModalBody,
   Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Flex,
+  Box,
+  Button,
+  Input,
 } from "@chakra-ui/react";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
-import { FC, useEffect, useState } from "react";
-import { channelConverter, FA, FS } from "../utils/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { v4 } from "uuid";
-import { ChannelType, CHANNEL_DB, UserType, USER_DB } from "../utils/constants";
-import { useRecoilState } from "recoil";
-import { searchInfoState, userInfoState } from "../utils/providers";
+import { ChannelType, UserType } from "../utils/constants";
+import { CHANNEL_DB, FS, USER_DB } from "../utils/firebase";
+import { loginInfoState, userInfoState } from "../utils/providers";
 
 type Props = {
   isOpen: boolean;
-  onClose: () => void;
+  ss: () => void;
 };
 
-export const ChannelModal: FC<Props> = ({ isOpen, onClose }) => {
+export const ChannelModal = ({ isOpen, ss }: Props) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={ss}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>New Channel</ModalHeader>
@@ -43,11 +42,9 @@ export const ChannelModal: FC<Props> = ({ isOpen, onClose }) => {
               <Tab>Create</Tab>
             </TabList>
             <TabPanels>
+              <TabPanel></TabPanel>
               <TabPanel>
-                <SearchPannel onClose={onClose} />
-              </TabPanel>
-              <TabPanel>
-                <CreatePanel onClose={onClose} />
+                <AddModal ggg={ss} />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -57,36 +54,38 @@ export const ChannelModal: FC<Props> = ({ isOpen, onClose }) => {
   );
 };
 
-const CreatePanel: FC<{ onClose: () => void }> = ({ onClose }) => {
+type AddModalProps = {
+  ggg: () => void;
+};
+
+const AddModal = ({ ggg }: AddModalProps) => {
+  const [isLoading, setIsloading] = useState(false);
   const [channelNm, setChannelNm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const loginInfo = useRecoilValue(loginInfoState);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
   const createChannel = () => {
-    const uniqueId = v4();
-    if (userInfo) {
-      setIsLoading(true);
-      const channelData: ChannelType = {
-        channelId: uniqueId,
-        channelNm,
-        members: [{ name: userInfo.userName, userId: userInfo.userId }],
-        messages: [],
-      };
+    if (loginInfo && userInfo) {
+      setIsloading(true);
+      const uuid = v4();
       const userData: UserType = {
         ...userInfo,
-        myChannels: [
-          ...userInfo.myChannels,
-          { channelId: uniqueId, channelName: channelNm },
-        ],
+        myRooms: [...userInfo.myRooms, { id: uuid, name: channelNm }],
       };
-      setDoc(doc(FS, CHANNEL_DB, uniqueId), channelData);
-      setDoc(doc(FS, USER_DB, userInfo.userId), userData)
-        .then((_) => {
+      const channelData: ChannelType = {
+        channelId: uuid,
+        channelNm,
+        messages: [],
+        members: [{ id: userInfo.userId, name: userInfo.userName }],
+      };
+      setDoc(doc(FS, CHANNEL_DB, uuid), channelData);
+      setDoc(doc(FS, USER_DB, loginInfo), userData)
+        .then(() => {
           setUserInfo(userData);
+          ggg();
         })
         .finally(() => {
-          setIsLoading(false);
-          onClose();
+          setIsloading(false);
         });
     }
   };
@@ -110,96 +109,5 @@ const CreatePanel: FC<{ onClose: () => void }> = ({ onClose }) => {
         </Button>
       </Box>
     </Flex>
-  );
-};
-
-const SearchPannel: FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [searchTxt, setSearchTxt] = useState("");
-  const [filterArr, setFilterArr] = useState<ChannelType[]>([]);
-  const [searchInfo, setSearchInfo] = useRecoilState(searchInfoState);
-  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  useEffect(() => {
-    getDocs(collection(FS, CHANNEL_DB).withConverter(channelConverter)).then(
-      (res) => {
-        const items = res.docs.map((item) => item.data());
-        setSearchInfo(items);
-      }
-    );
-  }, []);
-
-  const searchChannel = () => {
-    const searching = searchInfo.filter((item) => item.channelNm === searchTxt);
-    setFilterArr(searching);
-  };
-
-  const joinChannel = (channel: ChannelType) => {
-    if (userInfo) {
-      const userData: UserType = {
-        ...userInfo,
-        myChannels: [
-          ...userInfo.myChannels,
-          {
-            channelId: channel.channelId,
-            channelName: channel.channelNm,
-          },
-        ],
-      };
-
-      const channelData: ChannelType = {
-        ...channel,
-        members: [
-          ...channel.members,
-          { name: userInfo.userName, userId: userInfo.userId },
-        ],
-      };
-
-      setDoc(doc(FS, CHANNEL_DB, channel.channelId), channelData);
-      setDoc(doc(FS, USER_DB, userInfo.userId), userData).then((_) => {
-        setUserInfo(userData);
-        onClose();
-      });
-    }
-  };
-
-  const isSameChannel = (id: string) => {
-    if (userInfo) {
-      const isSame = userInfo.myChannels.find((item) => item.channelId === id);
-      return isSame ? true : false;
-    }
-    return true;
-  };
-
-  return (
-    <>
-      <Flex gap={4} flexDirection={"column"}>
-        <Input
-          placeholder="Search Name"
-          value={searchTxt}
-          onChange={(e) => setSearchTxt(e.target.value)}
-        />
-        <Box textAlign="right">
-          <Button
-            onClick={searchChannel}
-            bg="cyan.200"
-            mr={3}
-            disabled={searchTxt === ""}
-            w="30%"
-          >
-            Search
-          </Button>
-        </Box>
-        {filterArr.map((item) => (
-          <Flex align={"center"} gap={3}>
-            <Text>{item.channelNm}</Text>
-            <Button
-              disabled={isSameChannel(item.channelId)}
-              onClick={() => joinChannel(item)}
-            >
-              Join
-            </Button>
-          </Flex>
-        ))}
-      </Flex>
-    </>
   );
 };
